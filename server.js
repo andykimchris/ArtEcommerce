@@ -1,14 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 const ArtWork = require("./models/art-gallery");
-const app = express();
 
-const dbURI =
-  "mongodb+srv://andykim:15040mhs@graphql-books.ty1qd.mongodb.net/art-gallery?retryWrites=true&w=majority";
+const app = express();
+dotenv.config()
+
+const dbURI = process.env.CONNECTION_URL
 mongoose
   .connect(dbURI)
   .then((_) => {
-    app.listen(5000);
+    app.listen(process.env.PORT || 5000);
     console.log("connected to db");
   })
   .catch((err) => console.log("error connecting to db", err));
@@ -22,6 +24,7 @@ app.post("/api/add-artwork", (req, res) => {
     .save()
     .then((result) => {
       res.send(result);
+      console.log("added artwork to mongo")
     })
     .catch((err) => console.log("error saving artwork", err));
 });
@@ -31,6 +34,7 @@ app.get("/api/get-artworks", (req, res) => {
     .sort({ name: 1 })
     .then((result) => {
       res.send({ artworks: result });
+      console.log("fetched artworks from mongo")
     })
     .catch((err) => {
       console.error(err);
